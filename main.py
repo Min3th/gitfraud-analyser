@@ -2,8 +2,24 @@ import requests
 from datetime import datetime 
 from dotenv import load_dotenv
 import os
+import tempfile
+import platform
+import subprocess
 
 load_dotenv()
+
+def open_in_editor(text):
+    with tempfile.NamedTemporaryFile('w+',delete=False,suffix='.txt') as tmp_file:
+        tmp_file.write(text)
+        tmp_filename = tmp_file.name
+
+    # In future check whether this works for all OSes
+    if platform.system() == "Windows":
+        os.startfile(tmp_filename)
+    elif platform.system() == 'Darwin':
+        subprocess.call(['open',tmp_filename])
+    else:
+        subprocess.call(['xdg-open',tmp_filename])
 
 def fetch_last_10_commits(username,token=None):
     headers = {
@@ -115,13 +131,15 @@ global_commits = fetch_global_commits(username,token)
 #     print(f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})")
 #     print(f"   {commit['url']}")
 
-for i,commit in enumerate(global_commits,1):
-    print(f"{i}.[{commit['repo']}]{commit['message']}({commit['date']})")
-    print(f"  {commit['url']}")
-    print(" Changed files:")
+output = ""
+for i, commit in enumerate(commits, 1):
+    output += f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})\n"
+    output += f"   {commit['url']}\n"
     if commit['diffs']:
         for diff in commit['diffs']:
-            print(f"  -{diff['filename']}")
-            print(f"   Patch snippet:\n{diff['patch'][:100]}...\n")
+            output += f"     - {diff['filename']}\n"
+            output += f"{diff['patch']}\n\n"
     else:
-        print("   (No diffs or patch not available)")
+        output += "     (No diffs)\n\n"
+
+open_in_editor(output)
