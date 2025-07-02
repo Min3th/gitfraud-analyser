@@ -80,14 +80,56 @@ def fetch_commit_diff(username,repo,sha,token=None):
 
     return diffs
 
+def score_commit(commit):
+    score = 0
+
+    short_or_generic_messages = ["update","fix","test",".","temp","change"]
+    if commit["message"].strip().lower() in short_or_generic_messages:
+        score += 2
+
+    total_lines = 0
+    suspicious_patterns = ["print(","console.log(","System.out.println(","echo "]
+    suspicious_lines = 0
+
+    if commit["diffs"]:
+        for diff in commit["diffs"]:
+            patch = diff["patch"]
+            added_lines = [line for line in patch.split("\n") if line.startswith("+") and not line.startswith("+++")]
+            total_lines =+ len(added_lines)
+
+            for line in added_lines:
+                if any(p in line for p in suspicious_patterns):
+                    suspicious_lines += 1
+
+    if total_lines <= 3:
+        score += 2
+    if suspicious_lines > 0:
+        score += 2
+    if suspicious_lines > 3:
+        score += 1 
+
+    return score
+
 token = os.getenv("GITHUB_TOKEN")
 username = input("Enter github username: ")
 global_commits = fetch_global_commits(username,token)
 
 output = ""
+# for i, commit in enumerate(global_commits, 1):
+#     output += f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})\n"
+#     output += f"   {commit['url']}\n"
+#     if commit['diffs']:
+#         for diff in commit['diffs']:
+#             output += f"     - {diff['filename']}\n"
+#             output += f"{diff['patch']}\n\n"
+#     else:
+#         output += "     (No diffs)\n\n"
+
 for i, commit in enumerate(global_commits, 1):
+    fraud_score = score_commit(commit)
     output += f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})\n"
     output += f"   {commit['url']}\n"
+    output += f"   ⚠️ Suspicion Score: {fraud_score}/5\n"
     if commit['diffs']:
         for diff in commit['diffs']:
             output += f"     - {diff['filename']}\n"
