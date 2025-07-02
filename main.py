@@ -61,11 +61,17 @@ def fetch_global_commits(username,token):
     for item in results.get("items",[]):
         commit = item["commit"]
         repo = item["repository"]["full_name"]
+        sha = item["sha"]
+        owner,repo_name = repo.split("/")
+
+        diffs = fetch_commit_diff(owner,repo_name,sha,token)
+
         commits.append({
             "repo":repo,
-            "message":commit["message"],
-            "date":commit["author"]["date"],
-            "url":item["html_url"]
+            "message": commit["message"],
+            "date": commit["author"]["date"],
+            "url": item["html_url"],
+            "diffs": diffs
         })
 
     return commits
@@ -98,7 +104,7 @@ def fetch_commit_diff(username,repo,sha,token=None):
 username = input("Enter github username: ")
 token = os.getenv("GITHUB_TOKEN")
 latest_commits = fetch_last_10_commits(username)
-lates_global_commits = fetch_global_commits(username,token)
+global_commits = fetch_global_commits(username,token)
 
 # for i, commit in enumerate(latest_commits, 1):
 #     print(f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})")
@@ -109,12 +115,13 @@ lates_global_commits = fetch_global_commits(username,token)
 #     print(f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})")
 #     print(f"   {commit['url']}")
 
-sha = commit["sha"]
-diffs = fetch_commit_diff(username,repo_name,sha,token)
-commit_data={
-    "repo":repo_name,
-    "message": commit["commit"]["message"],
-    "date": commit["commit"]["author"]["date"],
-    "url": commit["html_url"],
-    "diffs":diffs
-}
+for i,commit in enumerate(global_commits,1):
+    print(f"{i}.[{commit['repo']}]{commit['message']}({commit['date']})")
+    print(f"  {commit['url']}")
+    print(" Changed files:")
+    if commit['diffs']:
+        for diff in commit['diffs']:
+            print(f"  -{diff['filename']}")
+            print(f"   Patch snippet:\n{diff['patch'][:100]}...\n")
+    else:
+        print("   (No diffs or patch not available)")
