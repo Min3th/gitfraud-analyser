@@ -128,12 +128,13 @@ output = ""
 for i, commit in enumerate(global_commits, 1):
     fraud_score = score_commit(commit)
     output += f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})\n"
-    output += f"   {commit['url']}\n"
-    output += f"   ⚠️ Suspicion Score: {fraud_score}/5\n"
+    # output += f"   {commit['url']}\n"
+    score_percentage = (fraud_score/5)*100
+    output += f"   ⚠️ Suspicion Score: {score_percentage}%\n"
     if commit['diffs']:
         for diff in commit['diffs']:
             output += f"     - {diff['filename']}\n"
-            output += f"{diff['patch']}\n\n"
+            # output += f"{diff['patch']}\n\n"
     else:
         output += "     (No diffs)\n\n"
 
