@@ -10,8 +10,8 @@ setup(
     version= '0.01',
     author= 'John Doe',
     author_email = "mmm@gmail.com",
-    license='',
-    description = 'just a tool',
+    license='', # text indicating the license covering the package
+    description = 'just a tool', 
     long_description = long_description,
     long_description_content_type="text/markdown",
     url='github url of tool code',
@@ -20,7 +20,7 @@ setup(
     install_requires = [requirements],
     python_requires = '>=3.7',
     classifiers=[
-        "Programming Language :: Python :: currrent no",
+        "Programming Language :: Python :: 3.13.0",
         "Operating System :: OS Independent",
     ],
     entry_points = '''

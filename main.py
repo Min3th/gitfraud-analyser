@@ -5,6 +5,9 @@ import os
 import tempfile
 import platform
 import subprocess
+import click
+
+
 
 load_dotenv()
 
@@ -110,11 +113,6 @@ def score_commit(commit):
 
     return score
 
-token = os.getenv("GITHUB_TOKEN")
-username = input("Enter github username: ")
-global_commits = fetch_global_commits(username,token)
-
-output = ""
 # for i, commit in enumerate(global_commits, 1):
 #     output += f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})\n"
 #     output += f"   {commit['url']}\n"
@@ -125,17 +123,33 @@ output = ""
 #     else:
 #         output += "     (No diffs)\n\n"
 
-for i, commit in enumerate(global_commits, 1):
-    fraud_score = score_commit(commit)
-    output += f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})\n"
-    # output += f"   {commit['url']}\n"
-    score_percentage = (fraud_score/5)*100
-    output += f"   ⚠️ Suspicion Score: {score_percentage}%\n"
-    if commit['diffs']:
-        for diff in commit['diffs']:
-            output += f"     - {diff['filename']}\n"
-            # output += f"{diff['patch']}\n\n"
-    else:
-        output += "     (No diffs)\n\n"
 
-open_in_editor(output)
+@click.command()
+@click.option('--username','-u',required=True,help="Github username")
+
+def analyze(username):
+    token = os.getenv("GITHUB_TOKEN")
+    if not token:
+        print("⚠️  GitHub token not found in environment. Please set GITHUB_TOKEN in your .env file.")
+        return
+
+    global_commits = fetch_global_commits(username,token)
+    output = ""
+    for i, commit in enumerate(global_commits, 1):
+        fraud_score = score_commit(commit)
+        output += f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})\n"
+        # output += f"   {commit['url']}\n"
+        score_percentage = (fraud_score/5)*100
+        output += f"   ⚠️ Suspicion Score: {score_percentage}%\n"
+        if commit['diffs']:
+            for diff in commit['diffs']:
+                output += f"     - {diff['filename']}\n"
+                # output += f"{diff['patch']}\n\n"
+        else:
+            output += "     (No diffs)\n\n"
+    
+    open_in_editor(output)
+
+if __name__ == "__main__":
+    analyze()
+
