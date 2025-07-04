@@ -6,6 +6,7 @@ import tempfile
 import platform
 import subprocess
 import click
+from ML.collect_data import collect_and_save
 
 
 
@@ -140,5 +141,6 @@ def analyze(username):
     open_in_editor(output)
 
 if __name__ == "__main__":
-    analyze()
+    # analyze()
+    collect_and_save(username,label)
 

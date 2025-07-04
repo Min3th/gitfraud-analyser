@@ -1,8 +1,8 @@
 import os
 import csv
 from dotenv import load_dotenv 
-from features import extract_features
-from main import fetch_global_commits
+from .features import extract_features
+from Apis.github import fetch_global_commits
 
 load_dotenv()
 
