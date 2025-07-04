@@ -113,17 +113,6 @@ def score_commit(commit):
 
     return score
 
-# for i, commit in enumerate(global_commits, 1):
-#     output += f"{i}. [{commit['repo']}] {commit['message']} ({commit['date']})\n"
-#     output += f"   {commit['url']}\n"
-#     if commit['diffs']:
-#         for diff in commit['diffs']:
-#             output += f"     - {diff['filename']}\n"
-#             output += f"{diff['patch']}\n\n"
-#     else:
-#         output += "     (No diffs)\n\n"
-
-
 @click.command()
 @click.option('--username','-u',required=True,help="Github username")
 
