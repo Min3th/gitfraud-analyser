@@ -142,5 +142,5 @@ def analyze(username):
 
 if __name__ == "__main__":
     # analyze()
-    collect_and_save(username,label)
-
+    username = input("Enter github username: ")
+    collect_and_save(username,label="real")
