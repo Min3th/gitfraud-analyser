@@ -10,7 +10,7 @@ def extract_features(commit):
 
     message = commit.get("message","").strip().lower()
     features["msg_length"] = len(message.split())
-    features["is_generic_commit"] = int(message in GENERIC_COMMIT) # Gives 1(True) or 0(False)
+    features["is_generic_msg"] = int(message in GENERIC_COMMIT) # Gives 1(True) or 0(False)
 
     date_str = commit.get("date")
 
@@ -34,6 +34,6 @@ def extract_features(commit):
 
     features["lines_added"] = tot_lines
     features["sus_lines"] = sus_lines
-    features["files_changes"] = len(commit.get("diffs",[]))
+    features["files_changed"] = len(commit.get("diffs",[]))
 
     return features
