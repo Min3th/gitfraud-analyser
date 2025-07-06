@@ -1,7 +1,8 @@
 import re
 from datetime import datetime
+from constants import *
 
-GENERIC_COMMIT = {"update","fix","test",".","temp","change","_"}
+GENERIC_COMMIT = {"update","fix","test",".","temp","change","_","add"}
 SUS_PATTERNS = [r"print\(",r"console\.log(",r"System\.out\.println\(",r"echo"]
 
 def extract_features(commit):
@@ -9,16 +10,16 @@ def extract_features(commit):
     features = {}
 
     message = commit.get("message","").strip().lower()
-    features["msg_length"] = len(message.split())
-    features["is_generic_msg"] = int(message in GENERIC_COMMIT) # Gives 1(True) or 0(False)
+    features[MSG_LENGTH] = len(message.split())
+    features[IS_GENERIC_MSG] = int(message in GENERIC_COMMIT) # Gives 1(True) or 0(False)
 
     date_str = commit.get("date")
 
     try:
         committed_time = datetime.fromisoformat(date_str.replace("Z","+00:00"))
-        features["hour_of_day"] = committed_time.hour # For better accuracy change this to the exact time , not just hr
+        features[TIME_OF_DAY] = f"{committed_time.hour}:{committed_time.minute}" 
     except:
-        features["hour_of_day"] = -1
+        features[TIME_OF_DAY] = -1
 
     tot_lines = 0
     sus_lines = 0
@@ -32,8 +33,31 @@ def extract_features(commit):
             if any(re.search(pattern, line) for pattern in SUS_PATTERNS):
                 sus_lines += 1
 
-    features["lines_added"] = tot_lines
-    features["sus_lines"] = sus_lines
-    features["files_changed"] = len(commit.get("diffs",[]))
+    features[LINES_ADDED] = tot_lines
+    features[SUS_LINES] = sus_lines
+    features[FILES_CHANGED] = len(commit.get("diffs",[]))
 
     return features
+
+def compare_commits(features1,features2):
+    score = 0
+    if features1[TIME_OF_DAY] == features2[TIME_OF_DAY]:
+        return
+
+def score_commit(features):
+    score = 0
+    if features[IS_GENERIC_MSG] == 1:
+        score += 2
+
+    total_lines = 0
+    suspicious_patterns = ["print(","console.log(","System.out.println(","echo "]
+    suspicious_lines = 0
+
+    sus_fraction = features[SUS_LINES]/features[LINES_ADDED]
+
+    if sus_fraction > 0.5:
+        score +=2
+    if features[LINES_ADDED] <= 2:
+        score += 2
+
+    return score

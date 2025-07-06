@@ -15,7 +15,7 @@ def collect_and_save(username,output_file="data/commits2.csv"):
         print("No commits found for the user!")
         return
     
-    field_names = ["username","repo","message","msg_length","is_generic_msg","hour_of_day","lines_added",
+    field_names = ["username","repo","message","msg_length","is_generic_msg","time_of_day","lines_added",
                    "sus_lines","files_changed"]
     
     os.makedirs("data",exist_ok=True)
