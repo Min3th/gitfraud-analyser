@@ -8,8 +8,6 @@ import subprocess
 import click
 from ML.collect_data import collect_and_save
 
-
-
 load_dotenv()
 
 def open_in_editor(text):
