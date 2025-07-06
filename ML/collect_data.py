@@ -3,12 +3,13 @@ import csv
 from dotenv import load_dotenv 
 from .features import extract_features
 from Apis.github import fetch_global_commits
+import asyncio
 
 load_dotenv()
 
 def collect_and_save(username,output_file="data/commits2.csv"):
     token = os.getenv("GITHUB_TOKEN")
-    commits = fetch_global_commits(username,token)
+    commits = asyncio.run(fetch_global_commits(username,token))
 
     if not commits:
         print("No commits found for the user!")
