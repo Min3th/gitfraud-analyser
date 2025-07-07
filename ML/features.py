@@ -44,14 +44,18 @@ def compare_commits(features1,features2):
     if features1[TIME_OF_DAY] == features2[TIME_OF_DAY]:
         return
 
+def check_copied_projects(features):
+    score = 0
+    feedback = {}
+    if features[LINES_ADDED] > 10000:
+        score +=2
+        feedback["possible_copy"] = features[REPO]
+        return score
+
 def score_commit(features):
     score = 0
     if features[IS_GENERIC_MSG] == 1:
         score += 2
-
-    total_lines = 0
-    suspicious_patterns = ["print(","console.log(","System.out.println(","echo "]
-    suspicious_lines = 0
 
     sus_fraction = features[SUS_LINES]/features[LINES_ADDED]
 
