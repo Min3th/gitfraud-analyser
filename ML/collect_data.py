@@ -41,9 +41,11 @@ def get_score(username,output_file="data/score.csv"):
     token = os.getenv("GITHUB_TOKEN")
     commits = asyncio.run(fetch_global_commits(username,token))
     score = 0
+    divisor = 0
     for commit in commits:
         features = extract_features(commit)
         score += score_commit(features)
+        divisor += 8
     
-    final_score = score/80
-    print(final_score)
+    final_score = (score/divisor)*100
+    print(f"{final_score}%")

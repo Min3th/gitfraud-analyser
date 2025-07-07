@@ -3,7 +3,7 @@ from datetime import datetime
 from .constants import *
 
 GENERIC_COMMIT = {"update","fix","test",".","temp","change","_","add"}
-SUS_PATTERNS = [r"print\(",r"console\.log(",r"System\.out\.println\(",r"echo"]
+SUS_PATTERNS = [r"print\(",r"console\.log\s*\(",r"System\.out\.println\(",r"echo"]
 
 def extract_features(commit):
 
@@ -27,7 +27,7 @@ def extract_features(commit):
 
     for diff in commit.get("diffs",[]):
         patch = diff.get("patch","")
-        added_lines = [line for line in patch.split("\n") if line.startswith("+") and not line.startswith("+")]
+        added_lines = [line for line in patch.split("\n") if line.startswith("+") and not line.startswith("+++")]
         tot_lines += len(added_lines)
 
         for line in added_lines:
@@ -37,6 +37,7 @@ def extract_features(commit):
     features[LINES_ADDED] = tot_lines
     features[SUS_LINES] = sus_lines
     features[FILES_CHANGED] = len(commit.get("diffs",[]))
+    features[REPO] = commit.get("repo", "unknown")
 
     return features
 
