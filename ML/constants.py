@@ -7,3 +7,4 @@ TIME_OF_DAY    = "time_of_day"
 LINES_ADDED    = "lines_added"
 SUS_LINES      = "sus_lines"
 FILES_CHANGED  = "files_changed"
+COMMITED_DAY   = 'committed_day'

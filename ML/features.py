@@ -17,6 +17,7 @@ def extract_features(commit):
 
     try:
         committed_time = datetime.fromisoformat(date_str.replace("Z","+00:00"))
+        features[COMMITED_DAY] = f"{committed_time.day}/{committed_time.month}/{committed_time.year}"
         features[TIME_OF_DAY] = f"{committed_time.hour}:{committed_time.minute}" 
     except:
         features[TIME_OF_DAY] = -1
@@ -41,8 +42,11 @@ def extract_features(commit):
 
 def compare_commits(features1,features2):
     score = 0
-    if features1[TIME_OF_DAY] == features2[TIME_OF_DAY]:
-        return
+    feedback = {}
+    if features1[TIME_OF_DAY] == features2[TIME_OF_DAY] and features1[COMMITED_DAY] != features2[COMMITED_DAY]:
+        score += 2
+        feedback["possible_automation"] = features1[REPO]
+        return score
 
 def check_copied_projects(features):
     score = 0
@@ -63,5 +67,7 @@ def score_commit(features):
         score +=2
     if features[LINES_ADDED] <= 2:
         score += 2
+    # if features[FILES_CHANGED] <= 2:
+    #     score +=2
 
     return score
