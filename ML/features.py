@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from constants import *
+from .constants import *
 
 GENERIC_COMMIT = {"update","fix","test",".","temp","change","_","add"}
 SUS_PATTERNS = [r"print\(",r"console\.log(",r"System\.out\.println\(",r"echo"]
@@ -69,5 +69,7 @@ def score_commit(features):
         score += 2
     # if features[FILES_CHANGED] <= 2:
     #     score +=2
+
+    check_copied_projects(features)
 
     return score

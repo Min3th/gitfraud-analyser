@@ -6,7 +6,7 @@ import tempfile
 import platform
 import subprocess
 import click
-from ML.collect_data import collect_and_save
+from ML.collect_data import collect_and_save,get_score
 
 load_dotenv()
 
@@ -141,4 +141,5 @@ def analyze(username):
 if __name__ == "__main__":
     # analyze()
     username = input("Enter github username: ")
-    collect_and_save(username)
+    # collect_and_save(username)
+    get_score(username)

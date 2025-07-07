@@ -1,7 +1,7 @@
 import os
 import csv
 from dotenv import load_dotenv 
-from .features import extract_features
+from .features import extract_features,score_commit
 from Apis.github import fetch_global_commits
 import asyncio
 
@@ -36,3 +36,14 @@ def collect_and_save(username,output_file="data/commits2.csv"):
             writer.writerow(row)
 
     print(f"✅ {len(commits)} commits saved for {username}.")
+
+def get_score(username,output_file="data/score.csv"):
+    token = os.getenv("GITHUB_TOKEN")
+    commits = asyncio.run(fetch_global_commits(username,token))
+    score = 0
+    for commit in commits:
+        features = extract_features(commit)
+        score += score_commit(features)
+    
+    final_score = score/80
+    print(final_score)
