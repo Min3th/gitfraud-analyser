@@ -55,22 +55,34 @@ def check_copied_projects(features):
     if features[LINES_ADDED] > 10000:
         score +=2
         feedback["possible_copy"] = features[REPO]
-        return score
+
+    return score,feedback
 
 def score_commit(features):
     score = 0
     if features[IS_GENERIC_MSG] == 1:
         score += 2
 
-    sus_fraction = features[SUS_LINES]/features[LINES_ADDED]
+    sus_fraction = 0
+    feedback = {}
+    if features[LINES_ADDED] != 0 :
+        sus_fraction = features[SUS_LINES]/features[LINES_ADDED]
+    else :
+        feedback["no_lines"] = features[REPO]
 
+    # Check this
     if sus_fraction > 0.5:
         score +=2
     if features[LINES_ADDED] <= 2:
         score += 2
+    
+    # Decide whether to give points if less than 2 files were changed
+    #
     # if features[FILES_CHANGED] <= 2:
     #     score +=2
 
-    check_copied_projects(features)
+    copy_score,copy_feedback = check_copied_projects(features)
+    score += copy_score
+    feedback.update(copy_feedback)
 
-    return score
+    return score,feedback

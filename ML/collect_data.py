@@ -42,10 +42,14 @@ def get_score(username,output_file="data/score.csv"):
     commits = asyncio.run(fetch_global_commits(username,token))
     score = 0
     divisor = 0
+    feedback = {}
     for commit in commits:
         features = extract_features(commit)
-        score += score_commit(features)
+        commit_score,commit_feedback = score_commit(features)
+        score += commit_score
+        feedback.update(commit_feedback)
         divisor += 8
     
     final_score = (score/divisor)*100
     print(f"{final_score}%")
+    print(feedback)
