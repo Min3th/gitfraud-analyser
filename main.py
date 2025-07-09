@@ -7,7 +7,7 @@ import platform
 import subprocess
 import click
 from ML.collect_data import collect_and_save,get_score
-from ML.mistral_check import build_commit_prompt
+from ML.model import build_commit_prompt
 
 load_dotenv()
 
