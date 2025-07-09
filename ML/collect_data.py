@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from .features import extract_features,score_commit
 from Apis.github import fetch_global_commits
 import asyncio
+from .mistral_check import build_commit_prompt
 
 load_dotenv()
 
@@ -43,13 +44,19 @@ def get_score(username,output_file="data/score.csv"):
     score = 0
     divisor = 0
     feedback = {}
+    llm_response = ""
     for commit in commits:
         features = extract_features(commit)
         commit_score,commit_feedback = score_commit(features)
         score += commit_score
         feedback.update(commit_feedback)
         divisor += 8
+        message = commit.get("message","").strip().lower()
+        features["message"] = message
+        diffs = commit.get("diffs")
+        llm_response=build_commit_prompt(features,diffs)
     
+    print(llm_response)
     final_score = (score/divisor)*100
     print(f"{final_score}%")
     print(feedback)

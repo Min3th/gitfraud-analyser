@@ -56,9 +56,59 @@ client = InferenceClient(
     api_key=os.getenv("HF_TOKEN"),
 )
 
-result = client.feature_extraction(
-    "Today is a sunny day and I will get some ice cream.",
-    model="intfloat/multilingual-e5-large-instruct",
-)
+prompt = """
+A developer made the following commit:
 
-print(result)
+Commit Message: "updated files"
+Lines Changed: 154
+Suspicious Lines: 92
+Files Changed: 3
+Time of Commit: 2:45 AM
+Repo: portfolio-website
+Possible Copy: true
+
+Code Changes:
++ print("debug")
++ print("done")
++ import numpy
+
+Based on the features and the code diff, does this commit appear to be fake or automated?
+Explain your reasoning and return a verdict as either "FAKE" or "GENUINE".
+"""
+def build_commit_prompt(features, code_diff):
+    return f"""
+A developer made the following commit:
+
+Commit Message: "{features['message']}"
+Lines Changed: {features['lines_added']}
+Suspicious Lines: {features['sus_lines']}
+Files Changed: {features['files_changed']}
+Time of Commit: {features['time_of_day']}
+Repo: {features['repo']}
+Possible Copy: {features.get('possible_copy', False)}
+
+Code Changes:
+{code_diff}
+
+Based on the features and the code diff, does this commit appear to be fake or automated?
+Explain your reasoning and return a verdict as either "FAKE" or "GENUINE".
+"""
+
+# client = InferenceClient(
+#     provider="novita",
+#     api_key=os.getenv("HF_TOKEN"),
+# )
+
+# completion = client.chat.completions.create(
+#     model="mistralai/Mistral-7B-Instruct-v0.3",
+#     messages=[
+#         {
+#             "role": "user",
+#             "content": f"""
+#     {prompt}
+# """
+#         }
+#     ],
+# )
+
+# print(completion.choices[0].message)
