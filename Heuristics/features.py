@@ -9,7 +9,7 @@ def extract_features(commit):
 
     features = {}
 
-    message = commit.get("message","").strip().lower()
+    message = commit.get(MESSAGE,"").strip().lower()
     features[MSG_LENGTH] = len(message.split())
     features[IS_GENERIC_MSG] = int(message in GENERIC_COMMIT) # Gives 1(True) or 0(False)
 
@@ -38,6 +38,7 @@ def extract_features(commit):
     features[SUS_LINES] = sus_lines
     features[FILES_CHANGED] = len(commit.get("diffs",[]))
     features[REPO] = commit.get("repo", "unknown")
+    features[MESSAGE] = message
 
     return features
 

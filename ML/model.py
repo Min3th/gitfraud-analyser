@@ -1,6 +1,7 @@
 import os
 from huggingface_hub import InferenceClient
 from dotenv import load_dotenv
+from ML.constants import HF_TOKEN
 
 load_dotenv()
 
@@ -39,7 +40,7 @@ score: <score>/10
 def llm_response(features,code_diff):
     client = InferenceClient(
         provider="novita",
-        api_key=os.getenv("HF_TOKEN"),
+        api_key=os.getenv(HF_TOKEN),
     )
 
     prompt = build_commit_prompt(features,code_diff)
