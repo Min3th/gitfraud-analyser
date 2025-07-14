@@ -1,5 +1,6 @@
 import os
 import csv
+import re
 from dotenv import load_dotenv 
 from .features import extract_features,score_commit
 from Apis.github import fetch_global_commits
@@ -43,7 +44,9 @@ def get_score(username,output_file="data/score.csv"):
     token = os.getenv("GITHUB_TOKEN")
     commits = asyncio.run(fetch_global_commits(username,token))
     score = 0
+    llm_score = 0
     divisor = 0
+    llm_divisor = 0
     feedback = {}
     response_from_llm = ""
     for commit in commits:
@@ -55,9 +58,17 @@ def get_score(username,output_file="data/score.csv"):
         message = commit.get("message","").strip().lower()
         features["message"] = message
         diffs = commit.get("diffs")
-        response_from_llm=llm_response(features,diffs)
-        print(response_from_llm)
+        response_text = llm_response(features, diffs)
+        print("LLM Response:", response_text)
+        match = re.search(r"score:\s*(\d+)/10", response_text)
+        if match:
+            llm_score += int(match.group(1))
+            llm_divisor += 10  # normalize out of 10
+        else:
+            print("⚠️ Could not extract score from LLM response. Skipping this commit.")
     
     final_score = (score/divisor)*100
-    print(f"{final_score}%")
+    final_llm_score = (llm_score/llm_divisor)*100
+    print(f"Heuristic Score: {final_score}%")
     print(feedback)
+    print(f"LLM_Score: {final_llm_score}%")

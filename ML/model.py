@@ -19,10 +19,22 @@ Possible Copy: {features.get('possible_copy', False)}
 Code Changes:
 {code_diff}
 
-Based on the features and the code diff, does this commit appear to be fake or automated,
-The response should be in the format commit_message | one line reasoning | verdict. The verdict should be "FAKE" or 
-"GENUINE". No other response should be given other than the format i gave.
+Using a manual scoring heuristic, evaluate how suspicious this commit is. The scoring rules are:
+
+- Add 2 points if the commit message is very short or generic (e.g., "update", "fix", "test", ".", "temp", "change")
+- Add 2 points if the number of lines changed is 2 or fewer
+- Add 2 points if suspicious patterns like print/debug/log statements are found
+- Add 2 points if the percentage of suspicious lines found is greater than 50%
+- Add 2 points if the lines changed in the commit is greater than 10000
+
+Maximum possible score: 10
+
+Return the result in the following format exactly:
+score: <score>/10
+
+Do not return anything else.
 """
+
 
 def llm_response(features,code_diff):
     client = InferenceClient(
@@ -44,5 +56,4 @@ def llm_response(features,code_diff):
         ],
     )
 
-    return completion.choices[0].message
-
+    return completion.choices[0].message.content
