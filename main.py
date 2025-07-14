@@ -113,9 +113,6 @@ def score_commit(commit):
 
     return score
 
-@click.command()
-@click.option('--username','-u',required=True,help="Github username")
-
 def analyze(username):
     token = os.getenv("GITHUB_TOKEN")
     if not token:
@@ -138,6 +135,12 @@ def analyze(username):
             output += "     (No diffs)\n\n"
     
     open_in_editor(output)
+
+
+@click.command()
+@click.option('--username','-u',required=True,help="Github username")
+def main_entry(username):
+    get_score(username)
 
 if __name__ == "__main__":
     # analyze()

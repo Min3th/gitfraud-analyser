@@ -25,7 +25,7 @@ setup(
     ],
     entry_points = {
         'console_scripts':[
-            'gitfraud=main:analyze' # checks for analyze function in main.py
+            'gitfraud=main:main_entry' # checks for main_entry function in main.py
         ]
     }
 )
