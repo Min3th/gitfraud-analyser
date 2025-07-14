@@ -6,6 +6,16 @@ GENERIC_COMMIT = {"update","fix","test",".","temp","change","_","add"}
 SUS_PATTERNS = [r"print\(",r"console\.log\s*\(",r"System\.out\.println\(",r"echo"]
 
 def extract_features(commit):
+    """
+    Extract features from a given commit.
+
+    Args:
+        commit (dict): Commit object containing message, diffs, date, etc.
+
+    Returns:
+        dict: Extracted features.
+
+    """
 
     features = {}
 
@@ -43,6 +53,17 @@ def extract_features(commit):
     return features
 
 def compare_commits(features1,features2):
+    """
+     Compares features of two different commits.
+
+    Args:
+        feature1: Feature of 1st commit.
+        feature2: Feature of 2nd commit.
+
+    Returns:
+        int: Commit score.
+
+    """
     score = 0
     feedback = {}
     if features1[TIME_OF_DAY] == features2[TIME_OF_DAY] and features1[COMMITED_DAY] != features2[COMMITED_DAY]:
@@ -51,6 +72,17 @@ def compare_commits(features1,features2):
         return score
 
 def check_copied_projects(features):
+    """
+     Checks if user has copied an entire project.
+
+    Args:
+        features: Features extracted from the commit
+
+    Returns:
+        int: Commit score.
+        dict: Feedback on commits.
+
+    """
     score = 0
     feedback = {}
     if features[LINES_ADDED] > 10000:
@@ -60,6 +92,17 @@ def check_copied_projects(features):
     return score,feedback
 
 def score_commit(features):
+    """
+     Derives a commit score based on heuristics.
+
+    Args:
+        features: Features extracted from the commit
+
+    Returns:
+        int: Commit score.
+        dict: Feedback on commits.
+
+    """
     score = 0
     if features[IS_GENERIC_MSG] == 1:
         score += 2

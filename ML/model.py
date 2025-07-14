@@ -6,6 +6,17 @@ from ML.constants import HF_TOKEN
 load_dotenv()
 
 def build_commit_prompt(features, code_diff):
+    """
+     Builds the prompt.
+
+    Args:
+        features: Features extracted from the commit.
+        code_diff: Code in the commit.
+
+    Returns:
+        string: LLM Prompt.
+
+    """
     return f"""
 A developer made the following commit:
 
@@ -36,8 +47,18 @@ score: <score>/10
 
 """
 
-
 def llm_response(features,code_diff):
+    """
+     Derives a commit score from a llm.
+
+    Args:
+        features: Features extracted from the commit.
+        code_diff: Code in the commit.
+
+    Returns:
+        string: LLM Response.
+
+    """
     client = InferenceClient(
         provider="novita",
         api_key=os.getenv(HF_TOKEN),
