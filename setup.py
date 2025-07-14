@@ -16,7 +16,7 @@ setup(
     long_description_content_type="text/markdown",
     url='github url of tool code',
     py_modules=['main'],
-    # packages=find_packages(),
+    packages=find_packages(),
     install_requires = [], # add 'requirements' in the future
     python_requires = '>=3.7',
     classifiers=[
