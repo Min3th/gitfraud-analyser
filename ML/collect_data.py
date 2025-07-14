@@ -6,9 +6,17 @@ from .features import extract_features,score_commit
 from Apis.github import fetch_global_commits
 import asyncio
 from .model import llm_response
+import tkinter as tk
+from tkinter import messagebox
 
 
 load_dotenv()
+
+def show_popup(title,message):
+    root=tk.Tk()
+    root.withdraw()
+    messagebox.showinfo(title,message)
+    root.destroy()
 
 def collect_and_save(username,output_file="data/commits2.csv"):
     token = os.getenv("GITHUB_TOKEN")
@@ -48,7 +56,6 @@ def get_score(username,output_file="data/score.csv"):
     divisor = 0
     llm_divisor = 0
     feedback = {}
-    response_from_llm = ""
     for commit in commits:
         features = extract_features(commit)
         commit_score,commit_feedback = score_commit(features)
@@ -59,16 +66,16 @@ def get_score(username,output_file="data/score.csv"):
         features["message"] = message
         diffs = commit.get("diffs")
         response_text = llm_response(features, diffs)
-        print("LLM Response:", response_text)
         match = re.search(r"score:\s*(\d+)/10", response_text)
         if match:
             llm_score += int(match.group(1))
             llm_divisor += 10  # normalize out of 10
         else:
-            print("⚠️ Could not extract score from LLM response. Skipping this commit.")
+            print("⚠️ Could not extract score from LLM response. Skipping this commit.",response_text)
     
     final_score = (score/divisor)*100
     final_llm_score = (llm_score/llm_divisor)*100
     print(f"Heuristic Score: {final_score}%")
     print(feedback)
     print(f"LLM_Score: {final_llm_score}%")
+    show_popup("GitFraud Analysis",f"Heuristic Score: {final_score:.2f}%\nLLM Score: {final_llm_score:.2f}%")

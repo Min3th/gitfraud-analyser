@@ -29,10 +29,10 @@ Using a manual scoring heuristic, evaluate how suspicious this commit is. The sc
 
 Maximum possible score: 10
 
-Return the result in the following format exactly:
+⚠️ DO NOT explain your reasoning. DO NOT include any text other than the score line.
+Just return the score in this format: 
 score: <score>/10
 
-Do not return anything else.
 """
 
 
